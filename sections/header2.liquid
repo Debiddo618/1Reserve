@@ -85,7 +85,6 @@
             <a href="{{ link.url }}" class="text-base text-gray-500 hover:text-gray-900">{{ link.title }}</a>
           </div>
           {% endif %}
-
           {% endfor %}
 
         </nav>
@@ -98,11 +97,6 @@
           <a href="{{ routes.cart_url }}" class="whitespace-nowrap text-base text-gray-500 hover:text-gray-900">
             {% render 'icon-shopping-bag' %}
           </a>
-          {% comment %} {% if shop.customer_accounts_enabled %}
-          <a class="text-base text-gray-500 hover:text-gray-900" href="{{ routes.account_login_url }}">Login</a>
-          <a class="text-base text-gray-500 hover:text-gray-900" href="{{ routes.account_register_url }}">Register</a>
-          {% endif %} {% endcomment %}
-
         </div>
       </div>
     </div>

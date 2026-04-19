@@ -1,6 +1,6 @@
 {% assign main_menu_linklist = linklists[section.settings.menu].links %}
 
-<nav>
+<nav class="flex-row">
   {% comment %} Row 1 {% endcomment %}
   <div class="grid grid-cols-5 mb-7 min-h-[80px] items-center">
 
@@ -14,11 +14,12 @@
 
       <div class="search col-span-2">
         <form action="{{ routes.search_url }}" method="get" class="flex-auto">
-          <div class="relative text-gray-500 border rounded-sm">
+          <div
+            class="relative text-gray-500 border rounded-sm transition-colors duration-200 hover:border-gray-400 hover:bg-gray-50">
             <input type="search" name="q" placeholder="Search"
-              class="w-full bg-white h-10 px-5 pr-10 text-sm focus:outline-none">
+              class="w-full bg-white h-10 px-5 pr-10 text-sm focus:outline-none rounded-sm transition-colors duration-200 hover:bg-gray-50">
 
-            <button type="submit" class="absolute right-0 top-0 mt-2 mr-2 md:mr-5">
+            <button type="submit" class="absolute right-0 top-0 mt-2 mr-2 md:mr-5 cursor-pointer">
               {% render 'icon-search' %}
             </button>
           </div>
@@ -51,7 +52,7 @@
     <div class="col-span-1 flex justify-center items-center relative">
 
       <!-- ACCOUNT -->
-      <button id="accountButton" class="mx-2">
+      <button id="accountButton" class="mx-2 cursor-pointer">
         {% render 'icon-account' %}
       </button>
 
@@ -75,7 +76,7 @@
   </div>
 
   {% comment %} Row 2 {% endcomment %}
-  <div class="container">
+  <div class="flex justify-center items-center">
     <nav class="hidden md:flex space-x-10">
 
       {% for link in main_menu_linklist %}
@@ -88,11 +89,29 @@
           {% render 'icon-dropdown' %}
         </button>
 
-        <div class="hidden absolute z-10 mt-4 bg-white shadow-lg rounded-lg p-4 min-w-[200px]">
+        <div class="nav-dropdown-menu hidden absolute z-10 mt-4 bg-white shadow-lg rounded-lg p-4 min-w-[200px]">
           {% for childlink in link.links %}
+          {% if childlink.links != blank %}
+          <div class="relative group">
+            <div class="flex justify-between items-center px-3 py-2 hover:bg-gray-100 rounded cursor-pointer">
+              <a href="{{ childlink.url }}" class="flex-1">{{ childlink.title }}</a>
+              {% render 'icon-dropdown' %}
+            </div>
+
+            <div
+              class="hidden group-hover:block absolute left-full top-0 ml-0 bg-white shadow-lg rounded-lg p-2 min-w-[200px] z-20">
+              {% for grandchildlink in childlink.links %}
+              <a href="{{ grandchildlink.url }}" class="block px-3 py-2 hover:bg-gray-100 rounded whitespace-nowrap">
+                {{ grandchildlink.title }}
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+          {% else %}
           <a href="{{ childlink.url }}" class="block px-3 py-2 hover:bg-gray-100 rounded">
             {{ childlink.title }}
           </a>
+          {% endif %}
           {% endfor %}
         </div>
 
@@ -130,19 +149,55 @@
     addressIcon.classList.toggle("rotate-180");
   });
 
-  // ---------------- CLOSE ON OUTSIDE CLICK ----------------
-  document.addEventListener("click", () => {
-    accountMenu.classList.add("hidden");
-    addressDropdown.classList.add("hidden");
-    addressIcon.classList.remove("rotate-180");
-    closeAllMenus();
-  });
-
-  // ---------------- NAV DROPDOWN (ROW 2) ----------------
+  // ---------------- NAV DROPDOWN (ROW 2) - ONLY ONE OPEN AT A TIME ----------------
   function toggleMenu(button) {
-    const menu = button.nextElementSibling;
-    menu.classList.toggle("hidden");
+    const currentMenu = button.nextElementSibling;
+
+    // Get all navigation dropdown menus (using the class we added)
+    const allNavMenus = document.querySelectorAll('.nav-dropdown-menu');
+
+    // Close all other navigation dropdowns
+    allNavMenus.forEach(menu => {
+      if (menu !== currentMenu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    // Toggle the current menu
+    currentMenu.classList.toggle('hidden');
   }
+
+  // Helper function to close all navigation menus
+  function closeAllNavMenus() {
+    const allNavMenus = document.querySelectorAll('.nav-dropdown-menu');
+    allNavMenus.forEach(menu => {
+      if (!menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+      }
+    });
+  }
+
+  // ---------------- CLOSE ON OUTSIDE CLICK ----------------
+  document.addEventListener("click", (event) => {
+    // Close account dropdown if clicking outside
+    if (!accountButton.contains(event.target) && !accountMenu.contains(event.target)) {
+      accountMenu.classList.add("hidden");
+    }
+
+    // Close address dropdown if clicking outside
+    if (!addressToggle.contains(event.target) && !addressDropdown.contains(event.target)) {
+      addressDropdown.classList.add("hidden");
+      addressIcon.classList.remove("rotate-180");
+    }
+
+    // Close navigation dropdowns if clicking outside
+    const isNavButton = event.target.closest('.relative > button');
+    const isNavMenu = event.target.closest('.nav-dropdown-menu');
+
+    if (!isNavButton && !isNavMenu) {
+      closeAllNavMenus();
+    }
+  });
 </script>
 
 <style>
@@ -163,8 +218,7 @@
 "label": "Title",
 "default": "Menu",
 "info": "Title for Mobile"
-},
-{
+}, {
 "type": "link_list",
 "id": "menu",
 "label": "Header Menu",
