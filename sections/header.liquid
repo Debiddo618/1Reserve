@@ -7,7 +7,9 @@
     <!-- LOGO + SEARCH -->
     <div class="container col-span-3 grid grid-cols-3">
       <div class="logo-name col-span-1 mx-auto flex items-center">
-        {{ shop.name }}
+        <a href="{{ routes.root_url }}">
+          <h1 class="text-xl font-bold truncate">{{ shop.name }}</h1>
+        </a>
       </div>
 
       <div class="search col-span-2">
@@ -32,14 +34,12 @@
         <span class="ml-1">Pentagon City</span>
 
         <!-- ICON (FLIPS) -->
-        <span id="addressIcon"
-          class="ml-1 transition-transform duration-200">
+        <span id="addressIcon" class="ml-1 transition-transform duration-200">
           {% render 'icon-dropdown' %}
         </span>
       </div>
 
-      <div id="addressDropdown"
-        class="hidden absolute top-full mt-2 bg-white rounded-lg drop-shadow-lg p-2 z-50 ml-7">
+      <div id="addressDropdown" class="hidden absolute top-full mt-2 bg-white rounded-lg drop-shadow-lg p-2 z-50 ml-7">
         <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer font-bold">Fashion Center At Pentagon City</div>
         <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer">1100 S Hayes St Suite M10, Arlington, VA 22202</div>
 
@@ -79,32 +79,29 @@
     <nav class="hidden md:flex space-x-10">
 
       {% for link in main_menu_linklist %}
-        {% if link.links != blank %}
-          <div class="relative">
+      {% if link.links != blank %}
+      <div class="relative">
 
-            <button type="button"
-              class="inline-flex items-center text-base text-gray-500 hover:text-gray-900"
-              onclick="toggleMenu(this)">
-              {{ link.title }}
-              {% render 'icon-dropdown' %}
-            </button>
+        <button type="button" class="inline-flex items-center text-base text-gray-500 hover:text-gray-900"
+          onclick="toggleMenu(this)">
+          {{ link.title }}
+          {% render 'icon-dropdown' %}
+        </button>
 
-            <div class="hidden absolute z-10 mt-4 bg-white shadow-lg rounded-lg p-4 min-w-[200px]">
-              {% for childlink in link.links %}
-                <a href="{{ childlink.url }}"
-                   class="block px-3 py-2 hover:bg-gray-100 rounded">
-                  {{ childlink.title }}
-                </a>
-              {% endfor %}
-            </div>
-
-          </div>
-        {% else %}
-          <a href="{{ link.url }}"
-             class="text-base text-gray-500 hover:text-gray-900">
-            {{ link.title }}
+        <div class="hidden absolute z-10 mt-4 bg-white shadow-lg rounded-lg p-4 min-w-[200px]">
+          {% for childlink in link.links %}
+          <a href="{{ childlink.url }}" class="block px-3 py-2 hover:bg-gray-100 rounded">
+            {{ childlink.title }}
           </a>
-        {% endif %}
+          {% endfor %}
+        </div>
+
+      </div>
+      {% else %}
+      <a href="{{ link.url }}" class="text-base text-gray-500 hover:text-gray-900">
+        {{ link.title }}
+      </a>
+      {% endif %}
       {% endfor %}
 
     </nav>
@@ -148,23 +145,31 @@
   }
 </script>
 
+<style>
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+</style>
+
 {% schema %}
 {
-  "name": "Header",
-  "settings": [
-    {
-      "type": "text",
-      "id": "mobile_menu_title",
-      "label": "Title",
-      "default": "Menu",
-      "info": "Title for Mobile"
-    },
-    {
-      "type": "link_list",
-      "id": "menu",
-      "label": "Header Menu",
-      "default": "main-menu"
-    }
-  ]
+"name": "Header",
+"settings": [
+{
+"type": "text",
+"id": "mobile_menu_title",
+"label": "Title",
+"default": "Menu",
+"info": "Title for Mobile"
+},
+{
+"type": "link_list",
+"id": "menu",
+"label": "Header Menu",
+"default": "main-menu"
+}
+]
 }
 {% endschema %}

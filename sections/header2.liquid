@@ -6,7 +6,9 @@
   {% comment %} Row 1 {% endcomment %}
   <div class="flex bg-red-200 justify-evenly min-h-[100px] items-center">
     <div class="logo">
-      <h1 class="text-xl font-bold truncate">{{ shop.name }}</h1>
+      <a href="{{ routes.root_url }}">
+        <h1 class="text-xl font-bold truncate">{{ shop.name }}</h1>
+      </a>
     </div>
     <div class="search-bar">
       <form action="{{ routes.search_url }}" method="get" class="flex-auto">
